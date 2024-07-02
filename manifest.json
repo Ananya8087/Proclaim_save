@@ -1,0 +1,34 @@
+
+{
+    "manifest_version": 3,
+    "name": "Save Input Fields Extension",
+    "version": "1.0",
+    "permissions": [
+      "storage",
+      "activeTab",
+      "scripting"
+    ],
+    "background": {
+      "service_worker": "background.js"
+    },
+    "action": {
+      "default_popup": "popup.html",
+      "default_icon": {
+        "16": "time-left.png",
+        "48": "time-left.png",
+        "128": "time-left.png"
+      }
+    },
+    "content_scripts": [
+      {
+        "matches": ["<all_urls>"],
+        "js": ["content.js"]
+      }
+    ],
+    "icons": {
+      "16": "time-left.png",
+      "48": "time-left.png",
+      "128": "time-left.png"
+    }
+  }
+  
