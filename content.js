@@ -138,22 +138,22 @@ function createNewRow() {
 function restoreAllData() {
     console.log('Restoring all data...');
     const savedData = JSON.parse(localStorage.getItem('savedData'));
-    
+
     if (savedData && savedData.length) {
         savedData.forEach((rowData, index) => {
             createNewRow(rowData.rowId);
-    
+
             const row = document.getElementById(rowData.rowId);
             row.querySelector('input[type="date"]').value = rowData.billDate;
             row.querySelector('input[placeholder="Enter bill no"]').value = rowData.billNo;
-    
+
             const categoryLevel1 = row.querySelector('#categoryLevel1');
             const categoryLevel1Option = Array.from(categoryLevel1.options).find(option => option.value === rowData.categoryLevel1);
             if (categoryLevel1Option) {
                 categoryLevel1Option.selected = true;
                 categoryLevel1.dispatchEvent(new Event('change', { bubbles: true }));
             }
-    
+
             const observer = new MutationObserver(() => {
                 const categoryLevel2Select = row.querySelector('#categoryLevel2');
                 if (categoryLevel2Select && !categoryLevel2Select.disabled) {
@@ -162,22 +162,22 @@ function restoreAllData() {
                         categoryLevel2Option.selected = true;
                         categoryLevel2Select.dispatchEvent(new Event('change', { bubbles: true }));
                     }
-    
+
                     observer.disconnect();
                 }
             });
-    
+
             observer.observe(row.querySelector('#categoryLevel2'), { attributes: true, attributeFilter: ['disabled'] });
-    
+
             row.querySelector('input[apptwodigitdecimanumber]').value = rowData.lengthOfStay;
             row.querySelector('input[numberplusminusonly]').value = rowData.amount;
-    
+
             // Restore Additional Info (NME)
             const nmeListContainer = row.querySelector('.show-NME-list');
             rowData.additionalInfo.forEach(info => {
                 const nmeName = info; // Assuming info contains the NME name
                 const nmeAmount = ''; // You need to parse the amount from info if available
-    
+
                 // Create NME entry if not already present
                 const nmeInput = row.querySelector('input[placeholder="Enter NME"]');
                 if (nmeInput && nmeName) {
@@ -185,65 +185,51 @@ function restoreAllData() {
                     if (!existingNME) {
                         const infoDiv = document.createElement('div');
                         infoDiv.className = 'capsule-label';
-                        infoDiv.innerHTML = `<small>${nmeName}</small>`;
+                        infoDiv.innerHTML = `<small>${nmeName}</small><input class="nme-amount-input" type="number" value="${nmeAmount}" />`; // Added NME amount input
                         nmeListContainer.appendChild(infoDiv);
                     }
                 }
-    
-                // Set NME amount if available
-                const amountInputs = row.querySelectorAll('input[numberplusminusonly]');
-              
             });
-    
+
             // Click on "Enter NME" button if exists
             const enterNMEButton = row.querySelector('.enter-nme-button');
             if (enterNMEButton) {
                 enterNMEButton.click();
             }
         });
-    
-        const nmeListContainer = row.querySelector('.show-NME-list'); // Highlighted: This variable assignment seems out of place
-        rowData.additionalInfo.forEach(info => { // Highlighted: This loop is outside the forEach loop of savedData
-            const infoDiv = document.createElement('div');
-            infoDiv.className = 'capsule-label';
-            infoDiv.innerHTML = `<small>${info}</small>`;
-            nmeListContainer.appendChild(infoDiv);
-        });
+
         calculateAndDisplayTotal();
-    
-        const allRows = document.querySelectorAll('.tablation--row--main');
-        allRows.forEach(row => {
-            enableCategoryLevel2(row);
-            enableAdditionalFields(row);
-        });
-        calculateAndDisplayTotal();
-    
         console.log('Data restored for all rows:', savedData);
     } else {
         console.log('No saved data found to restore.');
     }
-    
-    }
+}
+
     
 function calculateAndDisplayTotal() {
     const totalSpan = document.querySelector('div.text-right.text-truncate > span');
-    console.log(totalSpan);
-
     if (!totalSpan) return;
 
     let totalAmount = 0;
     const amountInputs = document.querySelectorAll('input[numberplusminusonly]');
-    console.log(amountInputs);
+    const nmeAmountInputs = document.querySelectorAll('.nme-amount-input'); // Adjust the selector as needed
 
     amountInputs.forEach(input => {
         const value = parseFloat(input.value) || 0;
-        console.log(value);
         totalAmount += value;
     });
-    
+
+    nmeAmountInputs.forEach(input => {
+        const value = parseFloat(input.value) || 0;
+        totalAmount += value;
+    });
 
     totalSpan.innerText = totalAmount.toFixed(2); // Adjust as per your formatting needs
 }
+
+// Call the function initially to calculate and display the initial total
+calculateAndDisplayTotal();
+    
 
 // Call the function initially to calculate and display the initial total
 //calculateAndDisplayTotal();
