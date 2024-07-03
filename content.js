@@ -1,4 +1,3 @@
-// Function to observe and process new rows
 function observeRows() {
     const container = document.querySelector('.tabulation-content');
     if (!container) {
@@ -6,13 +5,25 @@ function observeRows() {
         return;
     }
 
-    const observer = new MutationObserver(() => {
-        const rows = document.querySelectorAll('.tablation--row--main');
-        console.log(`Found ${rows.length} rows.`);
-        rows.forEach((row, index) => {
-            if (!row.hasAttribute('data-processed')) {
-                row.setAttribute('data-processed', 'true');
-                restoreCategories(row, index);
+    const observer = new MutationObserver((mutationsList) => {
+        mutationsList.forEach(mutation => {
+            if (mutation.type === 'childList') {
+                mutation.addedNodes.forEach(node => {
+                    if (node.classList && node.classList.contains('tablation--row--main')) {
+                        console.log('Row added.');
+                        node.setAttribute('data-processed', 'true');
+                        restoreCategories(node);
+                        addEventListenersToAmountInputs(); // Add event listeners to new inputs
+                        calculateAndDisplayTotal(); // Recalculate total on new row addition
+                    }
+                });
+
+                mutation.removedNodes.forEach(node => {
+                    if (node.classList && node.classList.contains('tablation--row--main')) {
+                        console.log('Row removed.');
+                        calculateAndDisplayTotal(); // Recalculate total on row removal
+                    }
+                });
             }
         });
     });
@@ -23,10 +34,11 @@ function observeRows() {
     // Initial processing of any rows already present
     const initialRows = document.querySelectorAll('.tablation--row--main');
     console.log(`Initial load: Found ${initialRows.length} rows.`);
-    initialRows.forEach((row, index) => {
+    initialRows.forEach((row) => {
         if (!row.hasAttribute('data-processed')) {
             row.setAttribute('data-processed', 'true');
-            restoreCategories(row, index);
+            restoreCategories(row);
+            addEventListenersToAmountInputs(); // Add event listeners to existing inputs
         }
     });
 
@@ -37,6 +49,7 @@ function observeRows() {
 
 // Delay the execution of observeRows by 10 seconds after the page loads
 setTimeout(observeRows, 10000);
+
 
 // Function to restore values for Category Level 1 and Category Level 2 from saved data
 function restoreCategories(row, index) {
@@ -227,8 +240,29 @@ function calculateAndDisplayTotal() {
     totalSpan.innerText = totalAmount.toFixed(2); // Adjust as per your formatting needs
 }
 
+// Function to add event listeners to amount inputs
+function addEventListenersToAmountInputs() {
+    const amountInputs = document.querySelectorAll('input[numberplusminusonly]');
+    const nmeAmountInputs = document.querySelectorAll('.nme-amount-input'); // Adjust the selector as needed
+
+    amountInputs.forEach(input => {
+        input.addEventListener('input', calculateAndDisplayTotal);
+    });
+
+    nmeAmountInputs.forEach(input => {
+        input.addEventListener('input', calculateAndDisplayTotal);
+    });
+}
+
 // Call the function initially to calculate and display the initial total
 calculateAndDisplayTotal();
+addEventListenersToAmountInputs();
+
+
+// Call the function initially to calculate and display the initial total
+calculateAndDisplayTotal();
+addEventListenersToAmountInputs();
+
     
 
 // Call the function initially to calculate and display the initial total
