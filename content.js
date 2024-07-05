@@ -60,6 +60,10 @@ function restoreCategories(row, index) {
 
     if (savedData && savedData.length > index) {
         const rowData = savedData[index];
+        document.querySelector('input[placeholder="Enter name"]').value = roomName;
+        console.log("roomname:",roomName); // Restore roomName
+
+
 
         const categoryLevel1 = row.querySelector('#categoryLevel1');
         if (categoryLevel1) {
@@ -104,10 +108,12 @@ function restoreCategories(row, index) {
 function saveAllData() {
     const rows = document.querySelectorAll('.tablation--row--main');
     const data = [];
+    const roomName = document.querySelector('input[placeholder="Enter name"]').value;
 
     rows.forEach(row => {
         const rowData = {
             rowId: row.id,
+            roomName: roomName,
             billDate: row.querySelector('input[type="date"]').value,
             billNo: row.querySelector('input[placeholder="Enter bill no"]').value,
             categoryLevel1: row.querySelector('#categoryLevel1').value,
@@ -146,6 +152,27 @@ function createNewRow() {
 
 // Example usage: Call createNewRow() when you want to add a new row
 //createNewRow();
+function addAdditionalInfo(row, additionalInfo) {
+    const nmeListContainer = row.querySelector('.show-NME-list');
+
+    // Clear any existing additional info
+    while (nmeListContainer.firstChild) {
+        nmeListContainer.removeChild(nmeListContainer.firstChild);
+    }
+
+    additionalInfo.forEach(info => {
+        const nmeName = info; // Assuming info contains the NME name
+        const nmeAmount = ''; // You need to parse the amount from info if available
+
+        // Create NME entry
+        const infoDiv = document.createElement('div');
+        infoDiv.className = 'capsule-label';
+        infoDiv.innerHTML = `<small>${nmeName} <span class="ml-2">${nmeAmount}</span></small>`; // Adjust the structure as needed
+
+        nmeListContainer.appendChild(infoDiv);
+    });
+}
+
 
 // Function to restore all saved data into rows
 function restoreAllData() {
@@ -154,7 +181,12 @@ function restoreAllData() {
 
     if (savedData && savedData.length) {
         savedData.forEach((rowData, index) => {
+            document.querySelector('input[placeholder="Enter name"]').value = rowData.roomName;
+           
+            console.log("roomname:",rowData.roomName);
+            
             createNewRow(rowData.rowId);
+            
 
             const row = document.getElementById(rowData.rowId);
             row.querySelector('input[type="date"]').value = rowData.billDate;
@@ -184,7 +216,9 @@ function restoreAllData() {
 
             row.querySelector('input[apptwodigitdecimanumber]').value = rowData.lengthOfStay;
             row.querySelector('input[numberplusminusonly]').value = rowData.amount;
+            addAdditionalInfo(row, rowData.additionalInfo);
 
+            // Restore Additional Info (NME)
             // Restore Additional Info (NME)
             const nmeListContainer = row.querySelector('.show-NME-list');
             rowData.additionalInfo.forEach(info => {
