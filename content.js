@@ -310,8 +310,8 @@ function createSaveButton() {
     saveButton.innerText = 'Save All Data';
     saveButton.id = 'save-all-data-button';
     saveButton.style.position = 'fixed';
-    saveButton.style.top = '58px';
-    saveButton.style.right = '380px';
+    saveButton.style.top = '61px';
+    saveButton.style.right = '210px';
     document.body.appendChild(saveButton);
 
     saveButton.addEventListener('click', saveAllData);
@@ -323,8 +323,8 @@ function createRestoreButton() {
     restoreButton.innerText = 'Restore All Data';
     restoreButton.id = 'restore-all-data-button';
     restoreButton.style.position = 'fixed';
-    restoreButton.style.top = '58px';
-    restoreButton.style.right = '250px';
+    restoreButton.style.top = '61px';
+    restoreButton.style.right = '70px';
     document.body.appendChild(restoreButton);
 
     restoreButton.addEventListener('click', restoreAllData);
