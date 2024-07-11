@@ -11,10 +11,13 @@ function observeRows() {
                 mutation.addedNodes.forEach(node => {
                     if (node.classList && node.classList.contains('tablation--row--main')) {
                         console.log('Row added.');
+                        saveAllData();
+                        
                         node.setAttribute('data-processed', 'true');
                         restoreCategories(node);
                         addEventListenersToAmountInputs(); // Add event listeners to new inputs
                         calculateAndDisplayTotal(); // Recalculate total on new row addition
+                        printRowData(node);
                     }
                 });
 
@@ -109,7 +112,9 @@ function saveAllData() {
     const rows = document.querySelectorAll('.tablation--row--main');
     const data = [];
     const roomName = document.querySelector('input[placeholder="Enter name"]').value;
-
+    console.log(rows);
+    console.log(data);
+    
     rows.forEach(row => {
         const rowData = {
             rowId: row.id,
@@ -132,7 +137,7 @@ function saveAllData() {
     });
 
     localStorage.setItem('savedData', JSON.stringify(data));
-    alert('Data saved for all rows!');
+    //alert('Data saved for all rows!');
     console.log('Saved Data:', data);
 
 
@@ -302,7 +307,26 @@ addEventListenersToAmountInputs();
 // Call the function initially to calculate and display the initial total
 //calculateAndDisplayTotal();
     
+// Function to print row data
+function printRowData(row) {
+    const rowData = {
+        roomName: document.querySelector('input[placeholder="Enter name"]').value,
+        billDate: row.querySelector('input[type="date"]').value,
+        billNo: row.querySelector('input[placeholder="Enter bill no"]').value,
+        categoryLevel1: row.querySelector('#categoryLevel1').value,
+        categoryLevel2: row.querySelector('#categoryLevel2').value,
+        lengthOfStay: row.querySelector('input[apptwodigitdecimanumber]').value,
+        amount: row.querySelector('input[numberplusminusonly]').value,
+        additionalInfo: []
+    };
 
+    const additionalInfoDivs = row.querySelectorAll('.show-NME-list .capsule-label small');
+    additionalInfoDivs.forEach(div => {
+        rowData.additionalInfo.push(div.innerText);
+    });
+
+    console.log('Row Data:', rowData);
+}
 
 // Function to create save button
 function createSaveButton() {
