@@ -1,3 +1,30 @@
+function disableSaveButton() {
+    const saveButton = document.querySelector('.btn.secondary.has-right-icon');
+    if (saveButton) {
+        saveButton.disabled = true;
+        console.log('Save & Exit button disabled.');
+    } else {
+        console.log('Save & Exit button not found.');
+    }
+}
+
+function disableUnlockButton() {
+    const unlockDetails = document.querySelector('unlock-details');
+    
+    const unlockButton = unlockDetails.querySelector('.btn-primary');
+    
+    //unlockButton.remove();
+    unlockButton.disabled = true;
+    console.log('Unlock button disabled.');
+    
+    
+}
+
+// Check for unlock-details and disable the button every 1 second
+setInterval(disableUnlockButton, 10);
+
+// Check every 1 second if the button exists and disable it
+setInterval(disableSaveButton, 10);
 function observeRows() {
     const container = document.querySelector('.tabulation-content');
     if (!container) {
